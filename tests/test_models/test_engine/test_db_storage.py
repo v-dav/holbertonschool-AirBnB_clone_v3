@@ -18,6 +18,7 @@ import json
 import os
 import pycodestyle
 import unittest
+from models import storage
 DBStorage = db_storage.DBStorage
 classes = {"Amenity": Amenity, "City": City, "Place": Place,
            "Review": Review, "State": State, "User": User}
@@ -87,3 +88,20 @@ class TestDBStorage(unittest.TestCase):
     @unittest.skipIf(models.storage_t != 'db', "not testing db storage")
     def test_save(self):
         """Test that save properly saves objects to file.json"""
+
+    @unittest.skipIf(models.storage_t != 'db', "not testing db storage")
+    def test_get(self):
+        """Test that get returns an object base on its id"""
+        instance = Amenity(name="wifi")
+        instance.save()
+        amenity = storage.get(Amenity, str(instance.id))
+        self.assertEqual(amenity, instance)
+
+    @unittest.skipIf(models.storage_t != 'db', "not testing db storage")
+    def test_count(self):
+        """ Test that count return the number of objects """
+        city = City()
+        city2 = City()
+        storage.save()
+        number = storage.count(City)
+        self.assertEqual(len(storage.all(City)), number)
