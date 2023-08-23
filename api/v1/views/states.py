@@ -1,0 +1,41 @@
+#!/usr/bin/python3
+"""A view API for state"""
+
+from api.v1.views import app_views
+from flask import abort, jsonify
+from models import storage
+from models.state import State
+
+
+@app_views.route("/states", methods=["GET"], strict_slashes=False)
+def get_states():
+    """Get all states from storage"""
+    all_states = storage.all(State)
+    json_format = []
+    for state in all_states.values():
+        json_format.append(state.to_dict())
+    return jsonify(json_format)
+
+
+@app_views.route("/states/<state_id>", methods=["GET"], strict_slashes=False)
+def get_states_withId(state_id):
+    """Get state with a provided ID"""
+    the_state = storage.get(State, state_id)
+    if the_state is None:
+        abort(404)
+    else:
+        return jsonify(the_state.to_dict())
+
+
+@app_views.route("/states/<state_id>", methods=["DELETE"],
+                 strict_slashes=False)
+def delete_state(state_id):
+    """Deletes a state object if found"""
+    the_state = storage.get(State, state_id)
+    print(the_state)
+    if the_state is None:
+        abort(404)
+    else:
+        storage.delete(the_state)
+        storage.save()
+        return {}, 200
