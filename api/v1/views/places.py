@@ -68,6 +68,7 @@ def create_place(city_id):
         the_user = storage.get(User, http_body_request["user_id"])
         if the_user is None:
             abort(404)
+        http_body_request["city_id"] = city_id
 
         """Create new place"""
         new_place = Place(**http_body_request)
